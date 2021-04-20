@@ -74,7 +74,8 @@ tresult PLUGIN_API PlugProcessor::setBusArrangements (Vst::SpeakerArrangement* i
                                                             int32 numOuts)
 {
 	// we only support one in and output bus and these buses must have the same number of channels
-	if (numIns == 1 && numOuts == 1 && inputs[0] == outputs[0])
+	//if (numIns == 1 && numOuts == 1 && inputs[0] == outputs[0])
+	if (numOuts == 1 && outputs[0] == Vst::SpeakerArr::kStereo)
 	{
 		return AudioEffect::setBusArrangements (inputs, numIns, outputs, numOuts);
 	}
@@ -155,7 +156,7 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 
 	//--- Process Audio---------------------
 	//--- ----------------------------------
-	if (data.numInputs == 0 || data.numOutputs == 0)
+	if (data.numOutputs < 1)
 	{
 		// nothing to do
 		return kResultOk;
@@ -163,9 +164,12 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 
 	if (data.numSamples > 0)
 	{
-		// Process Algorithm
-		// Ex: algo.process (data.inputs[0].channelBuffers32, data.outputs[0].channelBuffers32,
-		// data.numSamples);
+		if (data.numOutputs < 1)
+			return kResultOk;
+		else if (mVoiceProcessor != nullptr)
+		{
+			mVoiceProcessor->process(data);
+		}
 	}
 	return kResultOk;
 }
