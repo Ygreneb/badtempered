@@ -5,6 +5,7 @@ if(SMTG_ADD_VSTGUI)
         include/plugids.h
         include/plugprocessor.h
         include/version.h
+        include/voice.h
         source/plugfactory.cpp
         source/plugcontroller.cpp
         source/plugprocessor.cpp

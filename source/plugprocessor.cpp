@@ -61,7 +61,7 @@ tresult PLUGIN_API PlugProcessor::initialize (FUnknown* context)
 
 	//---create Audio In/Out buses------
 	// we want a stereo Input and a Stereo Output
-	addAudioInput (STR16 ("AudioInput"), Vst::SpeakerArr::kStereo);
+	addEventInput (STR16 ("EventInput"), Vst::SpeakerArr::kStereo);
 	addAudioOutput (STR16 ("AudioOutput"), Vst::SpeakerArr::kStereo);
 
 	return kResultTrue;
@@ -86,6 +86,7 @@ tresult PLUGIN_API PlugProcessor::setupProcessing (Vst::ProcessSetup& setup)
 {
 	// here you get, with setup, information about:
 	// sampleRate, processMode, maximum number of samples per audio block
+	mProcessSetup = setup;
 	return AudioEffect::setupProcessing (setup);
 }
 
@@ -96,11 +97,20 @@ tresult PLUGIN_API PlugProcessor::setActive (TBool state)
 	{
 		// Allocate Memory Here
 		// Ex: algo.create ();
+		if (!mVoiceProcessor)
+		{
+			mVoiceProcessor = new Vst::VoiceProcessorImplementation<float, Voice<float>, 2, MAX_VOICES, GlobalParameterState>(mProcessSetup.sampleRate, &mParameterState);
+		}
 	}
 	else // Release
 	{
 		// Free Memory if still allocated
 		// Ex: if(algo.isCreated ()) { algo.destroy (); }
+		if (mVoiceProcessor != nullptr)
+		{
+			delete mVoiceProcessor;
+		}
+		mVoiceProcessor = nullptr;
 	}
 	return AudioEffect::setActive (state);
 }

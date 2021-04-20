@@ -36,6 +36,8 @@
 
 #pragma once
 
+#define MAX_VOICES 64
+
 namespace Benergy {
 namespace BadTempered {
 

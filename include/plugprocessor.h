@@ -36,7 +36,10 @@
 
 #pragma once
 
+#include "../include/voice.h"
+
 #include "public.sdk/source/vst/vstaudioeffect.h"
+#include "public.sdk/samples/vst/common/voiceprocessor.h"
 
 namespace Benergy {
 namespace BadTempered {
@@ -68,6 +71,11 @@ protected:
 	Vst::ParamValue mParam1 = 0;
 	int16 mParam2 = 0;
 	bool mBypass = false;
+
+	Vst::ProcessSetup mProcessSetup;
+	Vst::VoiceProcessor* mVoiceProcessor = nullptr;
+	GlobalParameterState mParameterState;
+
 };
 
 //------------------------------------------------------------------------
