@@ -41,8 +41,8 @@
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 
-namespace Steinberg {
-namespace HelloWorld {
+namespace Benergy {
+namespace BadTempered {
 
 //-----------------------------------------------------------------------------
 PlugProcessor::PlugProcessor ()
@@ -123,17 +123,17 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 				int32 numPoints = paramQueue->getPointCount ();
 				switch (paramQueue->getParameterId ())
 				{
-					case HelloWorldParams::kParamVolId:
+					case BadTemperedParams::kParamVolId:
 						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
 						    kResultTrue)
 							mParam1 = value;
 						break;
-					case HelloWorldParams::kParamOnId:
+					case BadTemperedParams::kParamOnId:
 						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
 						    kResultTrue)
 							mParam2 = value > 0 ? 1 : 0;
 						break;
-					case HelloWorldParams::kBypassId:
+					case BadTemperedParams::kBypassId:
 						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
 						    kResultTrue)
 							mBypass = (value > 0.5f);
@@ -208,4 +208,4 @@ tresult PLUGIN_API PlugProcessor::getState (IBStream* state)
 
 //------------------------------------------------------------------------
 } // namespace
-} // namespace Steinberg
+} // namespace Benergy

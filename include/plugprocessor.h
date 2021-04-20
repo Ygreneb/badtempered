@@ -38,8 +38,10 @@
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
-namespace Steinberg {
-namespace HelloWorld {
+namespace Benergy {
+namespace BadTempered {
+
+using namespace Steinberg;
 
 //-----------------------------------------------------------------------------
 class PlugProcessor : public Vst::AudioEffect
@@ -69,5 +71,5 @@ protected:
 };
 
 //------------------------------------------------------------------------
-} // namespace HelloWorld
-} // namespace Steinberg
+} // namespace BadTempered
+} // namespace Benergy

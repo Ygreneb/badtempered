@@ -8,7 +8,7 @@
 //
 //-----------------------------------------------------------------------------
 // LICENSE
-// (c) 2020, Steinberg Media Technologies GmbH, All Rights Reserved
+// (c) 2020, Benergy Media Technologies GmbH, All Rights Reserved
 //-----------------------------------------------------------------------------
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -36,11 +36,13 @@
 
 #pragma once
 
-namespace Steinberg {
-namespace HelloWorld {
+namespace Benergy {
+namespace BadTempered {
+
+using namespace Steinberg;
 
 // HERE are defined the parameter Ids which are exported to the host
-enum HelloWorldParams : Vst::ParamID
+enum BadTemperedParams : Vst::ParamID
 {
 	kBypassId = 100,
 
@@ -55,5 +57,5 @@ static const FUID MyProcessorUID (0x1A38D1A7, 0x049E4D5C, 0x8B301CA4, 0x1FFAF9A7
 static const FUID MyControllerUID (0xDB359DD5, 0x850D4A6F, 0xA94D2716, 0xCFBEE149);
 
 //------------------------------------------------------------------------
-} // namespace HelloWorld
-} // namespace Steinberg
+} // namespace BadTempered
+} // namespace Benergy

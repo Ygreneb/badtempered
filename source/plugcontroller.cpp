@@ -42,8 +42,8 @@
 
 using namespace VSTGUI;
 
-namespace Steinberg {
-namespace HelloWorld {
+namespace Benergy {
+namespace BadTempered {
 
 //-----------------------------------------------------------------------------
 tresult PLUGIN_API PlugController::initialize (FUnknown* context)
@@ -54,13 +54,13 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 		//---Create Parameters------------
 		parameters.addParameter (STR16 ("Bypass"), nullptr, 1, 0,
 		                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
-		                         HelloWorldParams::kBypassId);
+		                         BadTemperedParams::kBypassId);
 
 		parameters.addParameter (STR16 ("Parameter 1"), STR16 ("dB"), 0, .5,
-		                         Vst::ParameterInfo::kCanAutomate, HelloWorldParams::kParamVolId, 0,
+		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kParamVolId, 0,
 		                         STR16 ("Param1"));
 		parameters.addParameter (STR16 ("Parameter 2"), STR16 ("On/Off"), 1, 1.,
-		                         Vst::ParameterInfo::kCanAutomate, HelloWorldParams::kParamOnId, 0,
+		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kParamOnId, 0,
 		                         STR16 ("Param2"));
 	}
 	return kResultTrue;
@@ -91,12 +91,12 @@ tresult PLUGIN_API PlugController::setComponentState (IBStream* state)
 	float savedParam1 = 0.f;
 	if (streamer.readFloat (savedParam1) == false)
 		return kResultFalse;
-	setParamNormalized (HelloWorldParams::kParamVolId, savedParam1);
+	setParamNormalized (BadTemperedParams::kParamVolId, savedParam1);
 
 	int8 savedParam2 = 0;
 	if (streamer.readInt8 (savedParam2) == false)
 		return kResultFalse;
-	setParamNormalized (HelloWorldParams::kParamOnId, savedParam2);
+	setParamNormalized (BadTemperedParams::kParamOnId, savedParam2);
 
 	// read the bypass
 	int32 bypassState;
@@ -109,4 +109,4 @@ tresult PLUGIN_API PlugController::setComponentState (IBStream* state)
 
 //------------------------------------------------------------------------
 } // namespace
-} // namespace Steinberg
+} // namespace Benergy
