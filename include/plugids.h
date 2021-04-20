@@ -51,8 +51,8 @@ enum HelloWorldParams : Vst::ParamID
 
 // HERE you have to define new unique class ids: for processor and for controller
 // you can use GUID creator tools like https://www.guidgenerator.com/
-static const FUID MyProcessorUID (0x41E3A6A2, 0xC1991743, 0xA64945DC, 0x3FB7D51D);
-static const FUID MyControllerUID (0xFAF056D1, 0x245C8945, 0x916485C6, 0x714C768E);
+static const FUID MyProcessorUID (0x1A38D1A7, 0x049E4D5C, 0x8B301CA4, 0x1FFAF9A7);
+static const FUID MyControllerUID (0xDB359DD5, 0x850D4A6F, 0xA94D2716, 0xCFBEE149);
 
 //------------------------------------------------------------------------
 } // namespace HelloWorld
