@@ -65,9 +65,9 @@
 #else
 #define stringFileDescription	stringPluginName" VST3-SDK"
 #endif
-#define stringCompanyName		"Steinberg Media Technologies\0"
-#define stringCompanyWeb		"http://www.steinberg.net"
-#define stringCompanyEmail		"mailto:info@steinberg.de"
+#define stringCompanyName		"Benergy's Power Fuel Plug-Ins\0"
+#define stringCompanyWeb		"https://benjaminkuckuk.com"
+#define stringCompanyEmail		"mailto:contact@benjaminkuckuk.com"
 
-#define stringLegalCopyright	"© 2020 Steinberg Media Technologies"
-#define stringLegalTrademarks	"VST is a trademark of Steinberg Media Technologies GmbH"
+#define stringLegalCopyright	"© 2021 Benjamin Kuckuk"
+#define stringLegalTrademarks	"Eat a cookie!"
