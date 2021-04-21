@@ -36,6 +36,7 @@
 
 #include "../include/plugcontroller.h"
 #include "../include/plugids.h"
+#include "../include/voice.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
@@ -56,12 +57,12 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 		                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
 		                         BadTemperedParams::kBypassId);
 
-		parameters.addParameter (STR16 ("Parameter 1"), STR16 ("dB"), 0, .5,
-		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kParamVolId, 0,
-		                         STR16 ("Param1"));
-		parameters.addParameter (STR16 ("Parameter 2"), STR16 ("On/Off"), 1, 1.,
-		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kParamOnId, 0,
-		                         STR16 ("Param2"));
+		parameters.addParameter (STR16 ("Volume"), STR16 ("dB"), 0, 0.25,
+		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kVolumeId, 0,
+		                         STR16 ("Vol"));
+		parameters.addParameter (STR16 ("Root Note"), nullptr, 12, 0.,
+		                         Vst::ParameterInfo::kNoFlags, BadTemperedParams::kRootNoteId, 0,
+		                         STR16 ("Root"));
 	}
 	return kResultTrue;
 }
@@ -88,23 +89,17 @@ tresult PLUGIN_API PlugController::setComponentState (IBStream* state)
 
 	IBStreamer streamer (state, kLittleEndian);
 
-	float savedParam1 = 0.f;
-	if (streamer.readFloat (savedParam1) == false)
-		return kResultFalse;
-	setParamNormalized (BadTemperedParams::kParamVolId, savedParam1);
+	GlobalParameterState gps;
+	tresult res = gps.setState(state);
 
-	int8 savedParam2 = 0;
-	if (streamer.readInt8 (savedParam2) == false)
-		return kResultFalse;
-	setParamNormalized (BadTemperedParams::kParamOnId, savedParam2);
+	if (res == kResultTrue)
+	{
+		setParamNormalized(kBypassId, gps.bypass);
+		setParamNormalized(kVolumeId, gps.volume);
+		setParamNormalized(kRootNoteId, gps.rootNote);
+	}
 
-	// read the bypass
-	int32 bypassState;
-	if (streamer.readInt32 (bypassState) == false)
-		return kResultFalse;
-	setParamNormalized (kBypassId, bypassState ? 1 : 0);
-
-	return kResultOk;
+	return res;
 }
 
 //------------------------------------------------------------------------

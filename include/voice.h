@@ -1,6 +1,7 @@
 #pragma once
 
 #include "public.sdk/samples/vst/common/voicebase.h"
+#include "pluginterfaces/base/ibstream.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -14,6 +15,12 @@ using ParamValue = Vst::ParamValue;
 struct GlobalParameterState
 {
 	ParamValue volume;
+	ParamValue rootNote;
+
+	bool bypass;
+
+	tresult setState(IBStream* stream);
+	tresult getState(IBStream* stream);
 };
 
 enum VoiceParameters
@@ -29,7 +36,7 @@ class Voice : public Vst::VoiceBase<kNumParameters, SamplePrecision, 2, GlobalPa
 public:
 	bool process(SamplePrecision* outputBuffers[2], int32 numSamples)
 	{
-		double tuningInHz = 440.0 * pow(2.0, (double)(pitch - 69) / 12.0);
+		double tuningInHz = 440.0 * pow(2.0, (double)(pitch - 69.0) / 12.0);
 
 		for (int i = 0; i < numSamples; ++i)
 		{
@@ -48,7 +55,7 @@ public:
 
 	void noteOn(int32 pitch, ParamValue velocity, float tuning, int32 sampleOffset, int32 noteId) SMTG_OVERRIDE
 	{
-		volume = 0.25;
+		volume = this->globalParameters->volume;
 
 		Vst::VoiceBase<kNumParameters, SamplePrecision, 2, GlobalParameterState>::noteOn(pitch, velocity, tuning, sampleOffset, noteId);
 	}

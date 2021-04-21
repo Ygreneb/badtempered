@@ -49,6 +49,10 @@ PlugProcessor::PlugProcessor ()
 {
 	// register its editor class
 	setControllerClass (MyControllerUID);
+
+	mParameterState.volume = 0.25;
+	mParameterState.rootNote = 0.0;
+	mParameterState.bypass = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -132,23 +136,20 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 				Vst::ParamValue value;
 				int32 sampleOffset;
 				int32 numPoints = paramQueue->getPointCount ();
-				switch (paramQueue->getParameterId ())
+				if (paramQueue->getPoint(numPoints - 1, sampleOffset, value) == kResultTrue)
 				{
-					case BadTemperedParams::kParamVolId:
-						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
-						    kResultTrue)
-							mParam1 = value;
-						break;
-					case BadTemperedParams::kParamOnId:
-						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
-						    kResultTrue)
-							mParam2 = value > 0 ? 1 : 0;
-						break;
+					switch (paramQueue->getParameterId())
+					{
 					case BadTemperedParams::kBypassId:
-						if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) ==
-						    kResultTrue)
-							mBypass = (value > 0.5f);
+						mParameterState.bypass = (value > 0.5f);
 						break;
+					case BadTemperedParams::kVolumeId:
+						mParameterState.volume = value;
+						break;
+					case BadTemperedParams::kRootNoteId:
+						mParameterState.rootNote = value > 0 ? 1 : 0;
+						break;
+					}
 				}
 			}
 		}
@@ -177,47 +178,13 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 //------------------------------------------------------------------------
 tresult PLUGIN_API PlugProcessor::setState (IBStream* state)
 {
-	if (!state)
-		return kResultFalse;
-
-	// called when we load a preset or project, the model has to be reloaded
-
-	IBStreamer streamer (state, kLittleEndian);
-
-	float savedParam1 = 0.f;
-	if (streamer.readFloat (savedParam1) == false)
-		return kResultFalse;
-
-	int32 savedParam2 = 0;
-	if (streamer.readInt32 (savedParam2) == false)
-		return kResultFalse;
-
-	int32 savedBypass = 0;
-	if (streamer.readInt32 (savedBypass) == false)
-		return kResultFalse;
-
-	mParam1 = savedParam1;
-	mParam2 = savedParam2 > 0 ? 1 : 0;
-	mBypass = savedBypass > 0;
-
-	return kResultOk;
+	return mParameterState.setState(state);
 }
 
 //------------------------------------------------------------------------
 tresult PLUGIN_API PlugProcessor::getState (IBStream* state)
 {
-	// here we need to save the model (preset or project)
-
-	float toSaveParam1 = mParam1;
-	int32 toSaveParam2 = mParam2;
-	int32 toSaveBypass = mBypass ? 1 : 0;
-
-	IBStreamer streamer (state, kLittleEndian);
-	streamer.writeFloat (toSaveParam1);
-	streamer.writeInt32 (toSaveParam2);
-	streamer.writeInt32 (toSaveBypass);
-
-	return kResultOk;
+	return mParameterState.getState(state);
 }
 
 //------------------------------------------------------------------------

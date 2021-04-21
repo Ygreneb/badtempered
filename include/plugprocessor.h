@@ -68,10 +68,6 @@ public:
 	static FUnknown* createInstance (void*) { return (Vst::IAudioProcessor*)new PlugProcessor (); }
 
 protected:
-	Vst::ParamValue mParam1 = 0;
-	int16 mParam2 = 0;
-	bool mBypass = false;
-
 	Vst::ProcessSetup mProcessSetup;
 	Vst::VoiceProcessor* mVoiceProcessor = nullptr;
 	GlobalParameterState mParameterState;

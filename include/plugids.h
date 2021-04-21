@@ -48,8 +48,8 @@ enum BadTemperedParams : Vst::ParamID
 {
 	kBypassId = 100,
 
-	kParamVolId = 102,
-	kParamOnId = 1000
+	kVolumeId = 200,
+	kRootNoteId = 201
 };
 
 
