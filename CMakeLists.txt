@@ -9,6 +9,7 @@ if(SMTG_ADD_VSTGUI)
         source/plugfactory.cpp
         source/plugcontroller.cpp
         source/plugprocessor.cpp
+        source/voice.cpp
     )
 
     #--- HERE change the target Name for your plug-in (for ex. set(target myDelay))-------
