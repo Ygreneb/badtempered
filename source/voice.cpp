@@ -20,10 +20,27 @@ tresult GlobalParameterState::setState(IBStream* stream)
 		return kResultFalse;
 	if (!s.readDouble(volume))
 		return kResultFalse;
+	if (!s.readDouble(tuning))
+		return kResultFalse;
 	if (!s.readDouble(rootNote))
 		return kResultFalse;
 	if (!s.readBool(bypass))
 		return kResultFalse;
+
+	if (!s.readDouble(sinusVolume))
+		return kResultFalse;
+	if (!s.readDouble(squareVolume))
+		return kResultFalse;
+	if (!s.readDouble(attack))
+		return kResultFalse;
+	if (!s.readDouble(decay))
+		return kResultFalse;
+	if (!s.readDouble(sustain))
+		return kResultFalse;
+	if (!s.readDouble(release))
+		return kResultFalse;
+
+	return kResultTrue;
 }
 
 tresult GlobalParameterState::getState(IBStream* stream)
@@ -37,10 +54,27 @@ tresult GlobalParameterState::getState(IBStream* stream)
 		return kResultFalse;
 	if (!s.writeDouble(volume))
 		return kResultFalse;
+	if (!s.writeDouble(tuning))
+		return kResultFalse;
 	if (!s.writeDouble(rootNote))
 		return kResultFalse;
 	if (!s.writeBool(bypass))
 		return kResultFalse;
+
+	if (!s.writeDouble(sinusVolume))
+		return kResultFalse;
+	if (!s.writeDouble(squareVolume))
+		return kResultFalse;
+	if (!s.writeDouble(attack))
+		return kResultFalse;
+	if (!s.writeDouble(decay))
+		return kResultFalse;
+	if (!s.writeDouble(sustain))
+		return kResultFalse;
+	if (!s.writeDouble(release))
+		return kResultFalse;
+
+	return kResultTrue;
 }
 
 }

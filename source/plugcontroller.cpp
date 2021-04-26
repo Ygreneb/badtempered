@@ -52,17 +52,26 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 	tresult result = EditController::initialize (context);
 	if (result == kResultTrue)
 	{
+		Vst::Parameter* param;
+
 		//---Create Parameters------------
 		parameters.addParameter (STR16 ("Bypass"), nullptr, 1, 0,
 		                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
 		                         BadTemperedParams::kBypassId);
 
-		parameters.addParameter (STR16 ("Volume"), STR16 ("dB"), 0, 0.25,
-		                         Vst::ParameterInfo::kCanAutomate, BadTemperedParams::kVolumeId, 0,
-		                         STR16 ("Vol"));
-		parameters.addParameter (STR16 ("Root Note"), nullptr, 12, 0.,
-		                         Vst::ParameterInfo::kNoFlags, BadTemperedParams::kRootNoteId, 0,
-		                         STR16 ("Root"));
+		param = new Vst::RangeParameter(L"Volume", kVolumeId, L"dB", -60., 60., 0., 0, Vst::ParameterInfo::kCanAutomate, 0, L"Vol");
+		param->setPrecision(2);
+		parameters.addParameter(param);
+
+		auto listParam = new Vst::StringListParameter(L"Tuning", kTuningId, nullptr, Vst::ParameterInfo::kIsList, 0, L"Tun");
+		listParam->appendString(L"Equal Step");
+		listParam->appendString(L"Pythagorean");
+		listParam->appendString(L"Werckmeister III");
+		parameters.addParameter(listParam);
+
+		param = new Vst::Parameter(L"RootNote", kRootNoteId, nullptr, 0.0, 12, Vst::ParameterInfo::kNoFlags, 0, L"Root");
+		param->setPrecision(3);
+		parameters.addParameter(param);
 	}
 	return kResultTrue;
 }
@@ -96,6 +105,7 @@ tresult PLUGIN_API PlugController::setComponentState (IBStream* state)
 	{
 		setParamNormalized(kBypassId, gps.bypass);
 		setParamNormalized(kVolumeId, gps.volume);
+		setParamNormalized(kTuningId, gps.tuning);
 		setParamNormalized(kRootNoteId, gps.rootNote);
 	}
 

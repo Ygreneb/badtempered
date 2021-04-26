@@ -146,8 +146,11 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 					case BadTemperedParams::kVolumeId:
 						mParameterState.volume = value;
 						break;
+					case BadTemperedParams::kTuningId:
+						mParameterState.tuning = value;
+						break;
 					case BadTemperedParams::kRootNoteId:
-						mParameterState.rootNote = value > 0 ? 1 : 0;
+						mParameterState.rootNote = value;
 						break;
 					}
 				}
@@ -169,6 +172,34 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 			return kResultOk;
 		else if (mVoiceProcessor != nullptr)
 		{
+			// Update tuning
+			//Vst::IEventList* inputEvents = data.inputEvents;
+			//int32 numEvents = inputEvents ? inputEvents->getEventCount() : 0;
+
+			//if (numEvents > 0)
+			//{
+			//	Vst::Event e;
+			//	for (int i = 0; i < numEvents; ++i)
+			//	{
+			//		inputEvents->getEvent(i, e);
+			//		if (e.type == Vst::Event::kNoteOnEvent)
+			//		{
+			//			float pitch = e.noteOn.pitch;
+			//			float rootNotePitch = 60 + round(mParameterState.rootNote * 11.0); // 60 = MIDI pitch of Middle C
+			//			float deltaPitch = pitch - rootNotePitch;
+
+			//			if (mParameterState.tuning < 0.33) { /* Equal Step => Do nothing */ }
+			//			else if (mParameterState.tuning < 0.66) // Pythagorean
+			//			{
+			//				// TODO respect root note
+			//				// For now, C = 60 is root note
+			//				inputEvents.
+			//			}
+			//		}
+			//	}
+			//}
+
+
 			mVoiceProcessor->process(data);
 		}
 	}
