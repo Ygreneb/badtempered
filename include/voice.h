@@ -101,7 +101,8 @@ void Voice<SamplePrecision>::noteOn(int32 pitch, ParamValue velocity, float tuni
 
 	if (globalParameters->tuning > 0.33) // Not equal step tuning, frequency needs update
 	{
-		int32 rootNotePitch = 60 + round(globalParameters->rootNote * 11.0); // 60 = MIDI pitch of Middle C
+		//int32 rootNotePitch = 60 + round(globalParameters->rootNote * 11.0); // 60 = MIDI pitch of Middle C
+		int32 rootNotePitch = globalParameters->rootNote; // 60 = MIDI pitch of Middle C
 		//double rootNoteFreq = 440.0 * pow(2.0, (rootNotePitch - 69) / 12.0); // 69 = MIDI pitch of A = 440 Hz
 		double offsetCents = 0.0;
 

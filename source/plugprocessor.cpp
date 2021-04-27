@@ -65,7 +65,8 @@ tresult PLUGIN_API PlugProcessor::initialize (FUnknown* context)
 
 	//---create Audio In/Out buses------
 	// we want a stereo Input and a Stereo Output
-	addEventInput (STR16 ("EventInput"));
+	addEventInput(STR16("EventInput"), 16, Vst::BusTypes::kMain);
+	addEventInput(STR16("BassEventInput"), 16, Vst::BusTypes::kAux);
 	addAudioOutput (STR16 ("AudioOutput"), Vst::SpeakerArr::kStereo);
 
 	return kResultTrue;
@@ -160,49 +161,46 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 
 	//--- Process Audio---------------------
 	//--- ----------------------------------
-	if (data.numOutputs < 1)
+	if (data.numOutputs < 1 || data.numSamples < 1)
 	{
 		// nothing to do
 		return kResultOk;
 	}
 
-	if (data.numSamples > 0)
+	if (mVoiceProcessor != nullptr)
 	{
-		if (data.numOutputs < 1)
-			return kResultOk;
-		else if (mVoiceProcessor != nullptr)
+		// Update tuning
+		Vst::IEventList* inputEvents = data.inputEvents;
+		int32 numEvents = inputEvents ? inputEvents->getEventCount() : 0;
+
+		if (numEvents > 0)
 		{
-			// Update tuning
-			//Vst::IEventList* inputEvents = data.inputEvents;
-			//int32 numEvents = inputEvents ? inputEvents->getEventCount() : 0;
-
-			//if (numEvents > 0)
-			//{
-			//	Vst::Event e;
-			//	for (int i = 0; i < numEvents; ++i)
-			//	{
-			//		inputEvents->getEvent(i, e);
-			//		if (e.type == Vst::Event::kNoteOnEvent)
-			//		{
-			//			float pitch = e.noteOn.pitch;
-			//			float rootNotePitch = 60 + round(mParameterState.rootNote * 11.0); // 60 = MIDI pitch of Middle C
-			//			float deltaPitch = pitch - rootNotePitch;
-
-			//			if (mParameterState.tuning < 0.33) { /* Equal Step => Do nothing */ }
-			//			else if (mParameterState.tuning < 0.66) // Pythagorean
-			//			{
-			//				// TODO respect root note
-			//				// For now, C = 60 is root note
-			//				inputEvents.
-			//			}
-			//		}
-			//	}
-			//}
-
-
-			mVoiceProcessor->process(data);
+			Vst::Event e;
+			for (int i = 0; i < numEvents; ++i)
+			{
+				inputEvents->getEvent(i, e);
+				if (e.type == Vst::Event::kNoteOnEvent && e.busIndex == 1)
+				{
+					mParameterState.rootNote = e.noteOn.pitch;
+				}
+			}
 		}
+
+		// Main processing
+		bool res = mVoiceProcessor->process(data);
+
+		// Update root note param
+		if (data.outputParameterChanges)
+		{
+			int32 index;
+			auto paramQueue = data.outputParameterChanges->addParameterData(BadTemperedParams::kRootNoteId, index);
+			if (paramQueue)
+				paramQueue->addPoint(0, mParameterState.rootNote / 128.0, index);
+		}
+
+		return res;
 	}
+
 	return kResultOk;
 }
 
