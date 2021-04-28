@@ -50,7 +50,12 @@ enum BadTemperedParams : Vst::ParamID
 
 	kVolumeId = 200,
 	kTuningId,
-	kRootNoteId
+	kRootNoteId,
+
+	kAttackId = 300,
+	kDecayId,
+	kSustainId,
+	kReleaseId
 };
 
 

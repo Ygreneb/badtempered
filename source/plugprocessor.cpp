@@ -50,9 +50,15 @@ PlugProcessor::PlugProcessor ()
 	// register its editor class
 	setControllerClass (MyControllerUID);
 
-	mParameterState.volume = 0.25;
+	mParameterState.volume = 0.0;
+	mParameterState.tuning = 0.0;
 	mParameterState.rootNote = 0.0;
 	mParameterState.bypass = false;
+
+	mParameterState.attack = 0.0;
+	mParameterState.decay = 0.0;
+	mParameterState.sustain = 0.0;
+	mParameterState.release = 0.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -152,6 +158,18 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 						break;
 					case BadTemperedParams::kRootNoteId:
 						mParameterState.rootNote = value;
+						break;
+					case BadTemperedParams::kAttackId:
+						mParameterState.attack = value;
+						break;
+					case BadTemperedParams::kDecayId:
+						mParameterState.decay = value;
+						break;
+					case BadTemperedParams::kSustainId:
+						mParameterState.sustain = value;
+						break;
+					case BadTemperedParams::kReleaseId:
+						mParameterState.release = value;
 						break;
 					}
 				}

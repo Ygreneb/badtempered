@@ -1,7 +1,10 @@
 
 #include "../include/voice.h"
+#include "../include/plugids.h"
 
 #include "base/source/fstreamer.h"
+
+#include <tuple>
 
 namespace Benergy {
 namespace BadTempered {
@@ -75,6 +78,27 @@ tresult GlobalParameterState::getState(IBStream* stream)
 		return kResultFalse;
 
 	return kResultTrue;
+}
+
+std::tuple<ParamValue, ParamValue, ParamValue> GlobalParameterState::getMinMaxDefaultForParam(int paramID)
+{
+	switch (paramID)
+	{
+	case kVolumeId:
+		return std::make_tuple(-60.0, 60.0, 0.0);
+	case kAttackId:
+	case kDecayId:
+	case kReleaseId:
+		return std::make_tuple(3.0, 10000.0, 10.0);
+	}
+
+	return std::make_tuple(0.0, 1.0, 0.0);
+}
+
+ParamValue GlobalParameterState::paramToPlain(ParamValue normalized, int paramID)
+{
+	std::tuple<ParamValue, ParamValue, ParamValue> minMaxDefault = getMinMaxDefaultForParam(paramID);
+	return normalized * (std::get<1>(minMaxDefault) - std::get<0>(minMaxDefault)) + std::get<0>(minMaxDefault);
 }
 
 double VoiceStatics::pythagoreanOffsets[12];

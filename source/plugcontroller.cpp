@@ -59,7 +59,8 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 		                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
 		                         BadTemperedParams::kBypassId);
 
-		param = new Vst::RangeParameter(L"Volume", kVolumeId, L"dB", -60., 60., 0., 0, Vst::ParameterInfo::kCanAutomate, 0, L"Vol");
+		auto range = GlobalParameterState::getMinMaxDefaultForParam(kVolumeId);
+		param = new Vst::RangeParameter(L"Volume", kVolumeId, L"dB", std::get<0>(range), std::get<1>(range), std::get<2>(range), 0, Vst::ParameterInfo::kCanAutomate, 0, L"Vol");
 		param->setPrecision(2);
 		parameters.addParameter(param);
 
@@ -71,6 +72,25 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 
 		param = new Vst::Parameter(L"RootNote", kRootNoteId, nullptr, 0.0, 12, Vst::ParameterInfo::kNoFlags, 0, L"Root");
 		param->setPrecision(3);
+		parameters.addParameter(param);
+
+		range = GlobalParameterState::getMinMaxDefaultForParam(kAttackId);
+		param = new Vst::RangeParameter(L"Attack", kAttackId, L"ms", std::get<0>(range), std::get<1>(range), std::get<2>(range), 0, Vst::ParameterInfo::kCanAutomate, 0, L"Atk");
+		param->setPrecision(1);
+		parameters.addParameter(param);
+
+		range = GlobalParameterState::getMinMaxDefaultForParam(kDecayId);
+		param = new Vst::RangeParameter(L"Decay", kDecayId, L"ms", std::get<0>(range), std::get<1>(range), std::get<2>(range), 0, Vst::ParameterInfo::kCanAutomate, 0, L"Dcy");
+		param->setPrecision(1);
+		parameters.addParameter(param);
+
+		param = new Vst::Parameter(L"Sustain", kSustainId, nullptr, 1.0, 0, Vst::ParameterInfo::kCanAutomate, 0, L"Sus");
+		param->setPrecision(2);
+		parameters.addParameter(param);
+
+		range = GlobalParameterState::getMinMaxDefaultForParam(kReleaseId);
+		param = new Vst::RangeParameter(L"Release", kReleaseId, L"ms", std::get<0>(range), std::get<1>(range), std::get<2>(range), 0, Vst::ParameterInfo::kCanAutomate, 0, L"Rls");
+		param->setPrecision(1);
 		parameters.addParameter(param);
 	}
 	return kResultTrue;
