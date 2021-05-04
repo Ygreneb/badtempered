@@ -57,10 +57,12 @@ class VoiceStatics
 public:
 	static double getPythagoreanOffset(int32 pitch, int32 rootPitch);
 	static double getWerckmeisterIIIOffset(int32 pitch, int32 rootPitch);
+	static double getMeantoneOffset(int32 pitch, int32 rootPitch);
 
 private:
 	static double pythagoreanOffsets[12]; // in Cents
 	static double werckmeisterIIIOffsets[12]; // in Cents
+	static double meantoneOffsets[12]; // in Cents
 };
 
 template<class SamplePrecision>
@@ -152,20 +154,24 @@ void Voice<SamplePrecision>::noteOn(int32 pitch, ParamValue velocity, float tuni
 	volume = dBToFactor(volume);
 	ParamValue rampTime = GlobalParameterState::paramToPlain(globalParameters->attack, kAttackId) * 0.001;
 	rampMultiplier = (log(volume) - log(currentVol)) / (rampTime * sampleRate);
+
+	// Multiplier idea and calculation from: https://www.musicdsp.org/en/latest/Synthesis/189-fast-exponential-envelope-generator.html
 	
 	frequency = 440.0 * pow(2.0, (pitch - 69.0) / 12.0); // Equal step tuning based on pitch
 
-	if (globalParameters->tuning > 0.33) // Not equal step tuning, frequency needs update
+	if (globalParameters->tuning > 0.25) // Not equal step tuning, frequency needs update
 	{
 		//int32 rootNotePitch = 60 + round(globalParameters->rootNote * 11.0); // 60 = MIDI pitch of Middle C
 		int32 rootNotePitch = globalParameters->rootNote; // 60 = MIDI pitch of Middle C
 		//double rootNoteFreq = 440.0 * pow(2.0, (rootNotePitch - 69) / 12.0); // 69 = MIDI pitch of A = 440 Hz
 		double offsetCents = 0.0;
 
-		if (globalParameters->tuning < 0.66)
+		if (globalParameters->tuning < 0.5)
 			offsetCents = VoiceStatics::getPythagoreanOffset(pitch, rootNotePitch);
-		else
+		else if (globalParameters->tuning < 0.75)
 			offsetCents = VoiceStatics::getWerckmeisterIIIOffset(pitch, rootNotePitch);
+		else
+			offsetCents = VoiceStatics::getMeantoneOffset(pitch, rootNotePitch);
 
 		frequency *= pow(2.0, offsetCents / 1200.0);
 	}

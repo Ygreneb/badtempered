@@ -103,6 +103,7 @@ ParamValue GlobalParameterState::paramToPlain(ParamValue normalized, int paramID
 
 double VoiceStatics::pythagoreanOffsets[12];
 double VoiceStatics::werckmeisterIIIOffsets[12];
+double VoiceStatics::meantoneOffsets[12];
 
 double VoiceStatics::getPythagoreanOffset(int32 pitch, int32 rootPitch)
 {
@@ -118,12 +119,20 @@ double VoiceStatics::getWerckmeisterIIIOffset(int32 pitch, int32 rootPitch)
 	return werckmeisterIIIOffsets[pitchMod];// +octaves * 1200.0;
 }
 
+double VoiceStatics::getMeantoneOffset(int32 pitch, int32 rootPitch)
+{
+	int32 pitchMod = (pitch - rootPitch) % 12;
+	//double octaves = trunc((double)pitch - rootPitch);
+	return meantoneOffsets[pitchMod];// +octaves * 1200.0;
+}
+
 class VoiceStaticsOnce
 {
 public:
 	VoiceStaticsOnce()
 	{
 		static const double pComma = 1200.0 * log2(pow(1.5, 12.0) / pow(2.0, 7.0)); // in Cents
+		static const double sComma = 1200.0 * log2(81.0 / 80.0); // in Cents
 
 		//VoiceStatics::pythagoreanOffsets[0] = 0.0;																// unison
 		//VoiceStatics::pythagoreanOffsets[1] = 1200.0 * log2( pow(3.0 / 2.0, -5.0) * pow(2.0,  3.0) ) - 100.0;	// minor second
@@ -148,6 +157,7 @@ public:
 				VoiceStatics::werckmeisterIIIOffsets[i] -= 0.25 * pComma * numFifths;
 			else if (numFifths == 6)
 				VoiceStatics::werckmeisterIIIOffsets[i] -= pComma;
+			VoiceStatics::meantoneOffsets[i] = VoiceStatics::pythagoreanOffsets[i] - 0.25 * sComma * numFifths;
 		}
 	}
 };

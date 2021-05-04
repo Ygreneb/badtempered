@@ -68,6 +68,7 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 		listParam->appendString(L"Equal Step");
 		listParam->appendString(L"Pythagorean");
 		listParam->appendString(L"Werckmeister III");
+		listParam->appendString(L"Meantone 1/4 comma");
 		parameters.addParameter(listParam);
 
 		param = new Vst::Parameter(L"RootNote", kRootNoteId, nullptr, 0.0, 12, Vst::ParameterInfo::kNoFlags, 0, L"Root");
