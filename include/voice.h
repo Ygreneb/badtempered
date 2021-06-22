@@ -80,6 +80,17 @@ private:
 		return pow(10, val_dB / 20.0);
 	}
 
+	inline constexpr SamplePrecision sgn(SamplePrecision v)
+	{
+		return ( (SamplePrecision(0) < v) - (v < SamplePrecision(0)) );
+	}
+	
+	inline constexpr SamplePrecision saw(double t, double f)
+	{
+		double temp;
+		return modf(t * f, &temp) * 2.0 - 1.0;
+	}
+
 	ParamValue frequency = 0.0;
 	ParamValue volume = 0.0;
 	//ParamValue rampTime = 0.0;
@@ -135,6 +146,10 @@ bool Voice<SamplePrecision>::process(SamplePrecision* outputBuffers[2], int32 nu
 	{
 		//SamplePrecision val = sin(n / sampleRate * currentSinusFreq * M_PI_MUL_2 + currentSinusPhase);
 		SamplePrecision sample = sin((double)n / sampleRate * frequency * M_PI_MUL_2);
+		sample += sgn(sample); // based on sinus wave
+		SamplePrecision sample_saw = saw(n / sampleRate, frequency);
+		sample += sample_saw;
+		sample += (SamplePrecision(2.0) * sample_saw + SamplePrecision(1.0) - std::max<SamplePrecision>(4.0 * sample_saw, 0.0)); // triangle
 			
 		outputBuffers[0][i] += currentVol * sample;
 		outputBuffers[1][i] += currentVol * sample;
