@@ -30,10 +30,6 @@ tresult GlobalParameterState::setState(IBStream* stream)
 	if (!s.readBool(bypass))
 		return kResultFalse;
 
-	if (!s.readDouble(sinusVolume))
-		return kResultFalse;
-	if (!s.readDouble(squareVolume))
-		return kResultFalse;
 	if (!s.readDouble(attack))
 		return kResultFalse;
 	if (!s.readDouble(decay))
@@ -41,6 +37,15 @@ tresult GlobalParameterState::setState(IBStream* stream)
 	if (!s.readDouble(sustain))
 		return kResultFalse;
 	if (!s.readDouble(release))
+		return kResultFalse;
+
+	if (!s.readDouble(sinusVolume))
+		return kResultFalse;
+	if (!s.readDouble(squareVolume))
+		return kResultFalse;
+	if (!s.readDouble(sawVolume))
+		return kResultFalse;
+	if (!s.readDouble(triVolume))
 		return kResultFalse;
 
 	return kResultTrue;
@@ -64,10 +69,6 @@ tresult GlobalParameterState::getState(IBStream* stream)
 	if (!s.writeBool(bypass))
 		return kResultFalse;
 
-	if (!s.writeDouble(sinusVolume))
-		return kResultFalse;
-	if (!s.writeDouble(squareVolume))
-		return kResultFalse;
 	if (!s.writeDouble(attack))
 		return kResultFalse;
 	if (!s.writeDouble(decay))
@@ -75,6 +76,15 @@ tresult GlobalParameterState::getState(IBStream* stream)
 	if (!s.writeDouble(sustain))
 		return kResultFalse;
 	if (!s.writeDouble(release))
+		return kResultFalse;
+
+	if (!s.writeDouble(sinusVolume))
+		return kResultFalse;
+	if (!s.writeDouble(squareVolume))
+		return kResultFalse;
+	if (!s.writeDouble(sawVolume))
+		return kResultFalse;
+	if (!s.writeDouble(triVolume))
 		return kResultFalse;
 
 	return kResultTrue;

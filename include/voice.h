@@ -27,12 +27,15 @@ struct GlobalParameterState
 	ParamValue tuning;
 	ParamValue rootNote;
 
-	ParamValue sinusVolume;
-	ParamValue squareVolume;
 	ParamValue attack;
 	ParamValue decay;
 	ParamValue sustain;
 	ParamValue release;
+
+	ParamValue sinusVolume;
+	ParamValue squareVolume;
+	ParamValue sawVolume;
+	ParamValue triVolume;
 
 	bool bypass;
 
@@ -95,8 +98,16 @@ private:
 	ParamValue volume = 0.0;
 	//ParamValue rampTime = 0.0;
 	ParamValue rampMultiplier = 0.0;
+	//ParamValue sinusRampMultiplier = 0.0;
+	//ParamValue squareRampMultiplier = 0.0;
+	//ParamValue sawRampMultiplier = 0.0;
+	//ParamValue triRampMultiplier = 0.0;
 
 	ParamValue currentVol = 0.0;
+	//ParamValue currentSinusVol = 0.0;
+	//ParamValue currentSquareVol = 0.0;
+	//ParamValue currentSawVol = 0.0;
+	//ParamValue currentTriVol = 0.0;
 
 	//ParamValue currentSinusPhase = 0.0;
 	//ParamValue currentSinusVolume = 0.0;
@@ -125,6 +136,10 @@ bool Voice<SamplePrecision>::process(SamplePrecision* outputBuffers[2], int32 nu
 		volume = globalParameters->sustain * dBToFactor(GlobalParameterState::paramToPlain(globalParameters->volume, kVolumeId));
 		ParamValue rampTime = GlobalParameterState::paramToPlain(globalParameters->decay, kDecayId) * 0.001; // in s
 		rampMultiplier = (log(volume) - log(currentVol)) / (rampTime * sampleRate);
+		//sinusRampMultiplier = (log(volume * globalParameters->sinusVolume) - log(currentSinusVol)) / (rampTime * sampleRate);
+		//squareRampMultiplier = (log(volume * globalParameters->squareVolume) - log(currentSquareVol)) / (rampTime * sampleRate);
+		//sawRampMultiplier = (log(volume * globalParameters->sawVolume) - log(currentSawVol)) / (rampTime * sampleRate);
+		//triRampMultiplier = (log(volume * globalParameters->triVolume) - log(currentTriVol)) / (rampTime * sampleRate);
 		pastAttack = true;
 	}
 
@@ -134,6 +149,10 @@ bool Voice<SamplePrecision>::process(SamplePrecision* outputBuffers[2], int32 nu
 		// TODO adjust volume not per block but per sample
 		//currentVol += ((volume - currentVol) / rampTime) * ((ParamValue)numSamples / sampleRate);
 		currentVol += rampMultiplier * numSamples * currentVol;
+		//currentSinusVol += sinusRampMultiplier * numSamples * currentSinusVol;
+		//currentSquareVol += squareRampMultiplier * numSamples * currentSquareVol;
+		//currentSawVol += sawRampMultiplier * numSamples * currentSawVol;
+		//currentTriVol += triRampMultiplier * numSamples * currentTriVol;
 	}
 
 	if (pastAttack && currentVol < 0.0002)
@@ -145,11 +164,20 @@ bool Voice<SamplePrecision>::process(SamplePrecision* outputBuffers[2], int32 nu
 	for (int i = 0; i < numSamples; ++i)
 	{
 		//SamplePrecision val = sin(n / sampleRate * currentSinusFreq * M_PI_MUL_2 + currentSinusPhase);
-		SamplePrecision sample = sin((double)n / sampleRate * frequency * M_PI_MUL_2);
-		sample += sgn(sample); // based on sinus wave
+
+		// sinus
+		SamplePrecision sample_sin = sin((double)n / sampleRate * frequency * M_PI_MUL_2);
+		SamplePrecision sample = 0.25 * globalParameters->sinusVolume * sample_sin;
+
+		// square
+		sample += 0.25 * globalParameters->squareVolume * sgn(sample_sin); // square based on sinus wave
+		
+		// saw
 		SamplePrecision sample_saw = saw(n / sampleRate, frequency);
-		sample += sample_saw;
-		sample += (SamplePrecision(2.0) * sample_saw + SamplePrecision(1.0) - std::max<SamplePrecision>(4.0 * sample_saw, 0.0)); // triangle
+		sample += 0.25 * globalParameters->sawVolume * sample_saw;
+
+		// tri
+		sample += 0.25 * globalParameters->triVolume * (SamplePrecision(2.0) * sample_saw + SamplePrecision(1.0) - std::max<SamplePrecision>(4.0 * sample_saw, 0.0)); // triangle
 			
 		outputBuffers[0][i] += currentVol * sample;
 		outputBuffers[1][i] += currentVol * sample;
@@ -169,6 +197,10 @@ void Voice<SamplePrecision>::noteOn(int32 pitch, ParamValue velocity, float tuni
 	volume = dBToFactor(volume);
 	ParamValue rampTime = GlobalParameterState::paramToPlain(globalParameters->attack, kAttackId) * 0.001;
 	rampMultiplier = (log(volume) - log(currentVol)) / (rampTime * sampleRate);
+	//sinusRampMultiplier = (log(volume * globalParameters->sinusVolume) - log(currentSinusVol)) / (rampTime * sampleRate);
+	//squareRampMultiplier = (log(volume * globalParameters->squareVolume) - log(currentSquareVol)) / (rampTime * sampleRate);
+	//sawRampMultiplier = (log(volume * globalParameters->sawVolume) - log(currentSawVol)) / (rampTime * sampleRate);
+	//triRampMultiplier = (log(volume * globalParameters->triVolume) - log(currentTriVol)) / (rampTime * sampleRate);
 
 	// Multiplier idea and calculation from: https://www.musicdsp.org/en/latest/Synthesis/189-fast-exponential-envelope-generator.html
 	
@@ -290,6 +322,10 @@ void Voice<SamplePrecision>::noteOff(ParamValue velocity, int32 sampleOffset)
 	volume = 0.0001;
 	ParamValue rampTime = GlobalParameterState::paramToPlain(globalParameters->release, kReleaseId) * 0.001;
 	rampMultiplier = (log(volume) - log(currentVol)) / (rampTime * sampleRate);
+	//sinusRampMultiplier = (log(volume * globalParameters->sinusVolume) - log(currentSinusVol)) / (rampTime * sampleRate);
+	//squareRampMultiplier = (log(volume * globalParameters->squareVolume) - log(currentSquareVol)) / (rampTime * sampleRate);
+	//sawRampMultiplier = (log(volume * globalParameters->sawVolume) - log(currentSawVol)) / (rampTime * sampleRate);
+	//triRampMultiplier = (log(volume * globalParameters->triVolume) - log(currentTriVol)) / (rampTime * sampleRate);
 
 	noteOffReceived = true;
 }
@@ -300,6 +336,10 @@ void Voice<SamplePrecision>::reset()
 	Vst::VoiceBase<kNumParameters, SamplePrecision, 2, GlobalParameterState>::reset();
 	n = 0;
 	currentVol = 0.0001;
+	//currentSinusVol = 0.0001;
+	//currentSquareVol = 0.0001;
+	//currentSawVol = 0.0001;
+	//currentTriVol = 0.0001;
 	//pastAttack = false;
 	//noteOffReceived = false;
 }

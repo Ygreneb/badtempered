@@ -55,7 +55,12 @@ enum BadTemperedParams : Vst::ParamID
 	kAttackId = 300,
 	kDecayId,
 	kSustainId,
-	kReleaseId
+	kReleaseId,
+
+	kSinusVolumeId = 400,
+	kSquareVolumeId,
+	kSawVolumeId,
+	kTriVolumeId
 };
 
 

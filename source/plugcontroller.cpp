@@ -93,6 +93,22 @@ tresult PLUGIN_API PlugController::initialize (FUnknown* context)
 		param = new Vst::RangeParameter(L"Release", kReleaseId, L"ms", std::get<0>(range), std::get<1>(range), std::get<2>(range), 0, Vst::ParameterInfo::kCanAutomate, 0, L"Rls");
 		param->setPrecision(1);
 		parameters.addParameter(param);
+
+		param = new Vst::Parameter(L"Sinus Volume", kSinusVolumeId, nullptr, 0.0, 0, Vst::ParameterInfo::kCanAutomate, 0, L"SinVol");
+		param->setPrecision(2);
+		parameters.addParameter(param);
+		
+		param = new Vst::Parameter(L"Square Volume", kSquareVolumeId, nullptr, 0.0, 0, Vst::ParameterInfo::kCanAutomate, 0, L"SqrVol");
+		param->setPrecision(2);
+		parameters.addParameter(param);
+
+		param = new Vst::Parameter(L"Sawtooth Volume", kSawVolumeId, nullptr, 0.0, 0, Vst::ParameterInfo::kCanAutomate, 0, L"SawVol");
+		param->setPrecision(2);
+		parameters.addParameter(param);
+
+		param = new Vst::Parameter(L"Triangle Volume", kTriVolumeId, nullptr, 0.0, 0, Vst::ParameterInfo::kCanAutomate, 0, L"TriVol");
+		param->setPrecision(2);
+		parameters.addParameter(param);
 	}
 	return kResultTrue;
 }
@@ -128,6 +144,16 @@ tresult PLUGIN_API PlugController::setComponentState (IBStream* state)
 		setParamNormalized(kVolumeId, gps.volume);
 		setParamNormalized(kTuningId, gps.tuning);
 		setParamNormalized(kRootNoteId, gps.rootNote);
+
+		setParamNormalized(kAttackId, gps.attack);
+		setParamNormalized(kDecayId, gps.decay);
+		setParamNormalized(kSustainId, gps.sustain);
+		setParamNormalized(kReleaseId, gps.release);
+
+		setParamNormalized(kSinusVolumeId, gps.sinusVolume);
+		setParamNormalized(kSquareVolumeId, gps.squareVolume);
+		setParamNormalized(kSawVolumeId, gps.sawVolume);
+		setParamNormalized(kTriVolumeId, gps.triVolume);
 	}
 
 	return res;

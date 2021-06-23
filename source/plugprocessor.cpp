@@ -59,6 +59,11 @@ PlugProcessor::PlugProcessor ()
 	mParameterState.decay = 0.0;
 	mParameterState.sustain = 0.0;
 	mParameterState.release = 0.0;
+
+	mParameterState.sinusVolume = 1.0;
+	mParameterState.squareVolume = 1.0;
+	mParameterState.sawVolume = 1.0;
+	mParameterState.triVolume = 1.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -170,6 +175,18 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData& data)
 						break;
 					case BadTemperedParams::kReleaseId:
 						mParameterState.release = value;
+						break;
+					case BadTemperedParams::kSinusVolumeId:
+						mParameterState.sinusVolume = value;
+						break;
+					case BadTemperedParams::kSquareVolumeId:
+						mParameterState.squareVolume = value;
+						break;
+					case BadTemperedParams::kSawVolumeId:
+						mParameterState.sawVolume = value;
+						break;
+					case BadTemperedParams::kTriVolumeId:
+						mParameterState.triVolume = value;
 						break;
 					}
 				}
